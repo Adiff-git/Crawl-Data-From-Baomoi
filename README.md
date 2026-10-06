@@ -1,12 +1,12 @@
 # Crawl Data From Báo Mới
 
-Script Python thu thập các bài viết có thời gian đăng nằm trong 24 giờ trước lúc bắt đầu chạy, từ trang [Tin mới của Báo Mới](https://baomoi.com/tin-moi.epi). Script lắng nghe phản hồi danh sách bài viết mà trang tải trong Chromium, cuộn trang để nhận thêm dữ liệu, loại trùng theo ID và ghi kết quả ra `baomoi_24h.json`.
+Script Python thu thập bài viết từ mục [Tin mới của Báo Mới](https://baomoi.com/tin-moi.epi), chỉ lưu các bài có thời gian đăng trong 24 giờ trước lúc bắt đầu chạy. Script dùng Playwright để mở Firefox, đọc dữ liệu JSON mà trang tải, cuộn và đi theo liên kết "Xem thêm" để lấy các trang tiếp theo. Bài viết được loại trùng theo ID và ghi vào `baomoi_24h.json`.
 
 ## Yêu cầu
 
 - Python 3.9 trở lên.
-- Kết nối mạng để truy cập Báo Mới.
-- Chromium do Playwright cài đặt.
+- Kết nối mạng và môi trường có thể mở cửa sổ Firefox.
+- Firefox do Playwright cài đặt.
 
 ## Cài đặt
 
@@ -14,7 +14,7 @@ Script Python thu thập các bài viết có thời gian đăng nằm trong 24 
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
-python -m playwright install chromium
+python -m playwright install firefox
 ```
 
 Trên Windows, kích hoạt môi trường bằng `.venv\Scripts\activate` trong Command Prompt hoặc `.venv\Scripts\Activate.ps1` trong PowerShell.
@@ -25,16 +25,12 @@ Trên Windows, kích hoạt môi trường bằng `.venv\Scripts\activate` trong
 python crawl_baomoi.py
 ```
 
-Chương trình chạy Chromium không giao diện theo mặc định. Để xem cửa sổ trình duyệt khi gỡ lỗi:
+Script mở Firefox có giao diện. Nếu không có bài mới sau nhiều lượt chờ, chương trình dành thêm 30 giây để thao tác trực tiếp trong cửa sổ trình duyệt. Script dừng sau tối đa 15 phút, khi không có thêm tiến độ, khi gặp lỗi hoặc khi nhấn Ctrl+C; dữ liệu đã thu thập vẫn được lưu.
 
-```bash
-python crawl_baomoi.py --headed
-```
+File `baomoi_24h.json` được tạo trong thư mục hiện tại. File chứa mốc thời gian UTC, số lượt phản hồi, các trang đã mở, số bài, lý do dừng, lỗi nếu có và danh sách bài viết. Mỗi bài có ID, tiêu đề, URL, thời gian đăng UTC, nguồn, mô tả và loại phản hồi nơi bài được tìm thấy.
 
-File `baomoi_24h.json` được tạo trong thư mục hiện tại. File gồm khoảng thời gian thu thập (UTC), số đợt phản hồi, số bài, lý do dừng, lỗi nếu có và danh sách bài viết. Mỗi bài có ID, tiêu đề, URL, thời gian đăng UTC, tên nguồn và mô tả.
+## Phạm vi kết quả
 
-## Giới hạn
-
-Kết quả phụ thuộc vào các đợt dữ liệu mà trang Báo Mới tải khi cuộn. Trường `reached_article_older_than_window` bằng `false` nghĩa là script chưa gặp bài cũ hơn 24 giờ; khi đó không thể kết luận đã thu thập đủ bài trong khoảng thời gian này. Script dừng sau tối đa 10 phút, khi trang báo hết dữ liệu, hoặc sau 10 lượt chờ không nhận phản hồi mới.
+Script chỉ giữ bài nằm trong cửa sổ 24 giờ và thu thập từ các trang Tin mới mà nó truy cập được. Trường `completeness_verified` hiện luôn là `false`: kết quả chưa có bước đối chiếu độc lập để xác nhận đã lấy đủ toàn bộ bài trong 24 giờ. `reached_article_older_than_window` cho biết quá trình thu thập có gặp bài cũ hơn mốc bắt đầu hay chưa; riêng dấu hiệu này cũng không chứng minh tính đầy đủ.
 
 Trang web và API có thể thay đổi, làm script cần cập nhật. Hãy sử dụng dữ liệu theo điều khoản của Báo Mới và nguồn xuất bản.
