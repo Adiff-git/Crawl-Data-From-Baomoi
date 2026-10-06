@@ -13,6 +13,7 @@ __pycache__/
 
 # Generated crawl data
 baomoi_24h.json
+vnexpress_24h.json
 
 # Local tool and cloud configuration
 .agents/

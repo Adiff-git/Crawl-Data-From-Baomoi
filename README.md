@@ -34,3 +34,15 @@ File `baomoi_24h.json` được tạo trong thư mục hiện tại. File chứa
 Script chỉ giữ bài nằm trong cửa sổ 24 giờ và thu thập từ các trang Tin mới mà nó truy cập được. Trường `completeness_verified` hiện luôn là `false`: kết quả chưa có bước đối chiếu độc lập để xác nhận đã lấy đủ toàn bộ bài trong 24 giờ. `reached_article_older_than_window` cho biết quá trình thu thập có gặp bài cũ hơn mốc bắt đầu hay chưa; riêng dấu hiệu này cũng không chứng minh tính đầy đủ.
 
 Trang web và API có thể thay đổi, làm script cần cập nhật. Hãy sử dụng dữ liệu theo điều khoản của Báo Mới và nguồn xuất bản.
+
+## Thu thập VnExpress
+
+`crawl_vnexpress.py` thu thập bài từ [Tin tức 24h của VnExpress](https://vnexpress.net/tin-tuc-24h) trong cửa sổ 24 giờ và đọc số bình luận, lượt thích từ phản hồi công khai của trang. Script cũng lưu thứ hạng theo số bình luận và điểm tương tác (tổng lượt thích bình luận cộng số trả lời). Kết quả là ảnh chụp tại thời điểm chạy; phạm vi toàn bộ trang VnExpress chưa được xác nhận.
+
+Sau khi cài Playwright và Firefox theo hướng dẫn trên, chạy:
+
+```bash
+python crawl_vnexpress.py
+```
+
+Script mở Firefox có giao diện và ghi kết quả vào `vnexpress_24h.json`. Có thể dùng `--headless` để chạy không giao diện, `--output` để đổi đường dẫn file, hoặc `--max-articles` để giới hạn số bài khi thử. File kết quả có `ranking_is_partial` và thông tin lỗi để nhận biết thứ hạng có thể chưa đầy đủ. Cả hai file JSON kết quả đều được bỏ qua trong Git.
